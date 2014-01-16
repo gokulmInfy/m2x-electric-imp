@@ -74,20 +74,22 @@ function round(x, y) {
     return (x.tofloat()/y+(x>0?0.5:-0.5)).tointeger()*y
 }
 
-NTC_Read_Enable <- hardware.pin8;
-NTC_Read_Enable.configure(DIGITAL_OUT_OD);
-NTC_Read_Enable.write(1);
-// instantiate our thermistor class
+// Setup Thermistor Enable Pin
+NTC_Read_Enable_L <- hardware.pin8;
+NTC_Read_Enable_L.configure(DIGITAL_OUT_OD);
+NTC_Read_Enable_L.write(1);
+
+// Instantiate the thermistor class
 thermistor <- Thermistor(hardware.pin9, b_therm, t0_therm, r_therm, 10, true);
 
 // enable thermistor
-NTC_Read_Enable.write(0); imp.sleep(0.01);
+NTC_Read_Enable_L.write(0); imp.sleep(0.01);
 
 // read temperature and send to agent
 agent.send("temp", { temp = round(thermistor.read_c(), 0.5) });
 
 // disable thermistor
-NTC_Read_Enable.write(1);
+NTC_Read_Enable_L.write(1);
 
 // disconnect from wifi and enter deep sleep for 15 minutes
 imp.onidle(function() { server.sleepfor(900.0); }); // 15 minutes
