@@ -55,8 +55,8 @@ class M2XFeed {
     }
 }
 
-API_KEY <- "";
-FEED_ID <- "";
+API_KEY <- "_Master Key_";
+FEED_ID <- "_Feed ID_";
 
 officeFeed <- M2XFeed(API_KEY, FEED_ID);
 

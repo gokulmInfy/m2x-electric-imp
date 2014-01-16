@@ -55,8 +55,8 @@ class M2XFeed {
     }
 }
 
-API_KEY <- "YOUR_API_KEY";
-FEED_ID <- "YOUR_FEED_ID";
+API_KEY <- "_Master Key_";
+FEED_ID <- "_Feed ID_";
 
 /********** Example usage of M2XFeed class **********/ 
 
