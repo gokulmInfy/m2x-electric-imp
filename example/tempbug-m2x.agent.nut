@@ -16,7 +16,7 @@ class M2XFeed {
         };
     }
   
-    function push(feedName, value, callback = null) {
+    function put(feedName, value, callback = null) {
         if (callback == null) callback = _defaultCallback.bindenv(this);
         
         local streamUrl = format("%s/streams/%s", _baseUrl, feedName);
@@ -61,5 +61,5 @@ FEED_ID <- "_Feed ID_";
 officeFeed <- M2XFeed(API_KEY, FEED_ID);
 
 device.on("temp", function(data) {
-    officeFeed.push("temp", data.temp);
+    officeFeed.put("temp", data.temp);
 });

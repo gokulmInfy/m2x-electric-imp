@@ -16,7 +16,7 @@ class M2XFeed {
         };
     }
   
-    function push(feedName, value, callback = null) {
+    function put(feedName, value, callback = null) {
         if (callback == null) callback = _defaultCallback.bindenv(this);
         
         local streamUrl = format("%s/streams/%s", _baseUrl, feedName);
