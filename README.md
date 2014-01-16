@@ -21,15 +21,15 @@ How to use the library
 1. Log into the [Electric Imp IDE](https://ide.electricimp.com).
 2. Create a New Model for your project, and assign your device to it.
 3. Copy the [M2XFeed class](/lib/m2x.agent.nut) to the top of your agent code.
-4. Create a feed object:
+4. Create a Feed object:
 ```
     feed <- M2XFeed("_Master Key_", "_Feed ID_");
 ```
-5. Push data to a stream in the feed:
+5. Push data to a Stream in the Feed:
 ```
     feed.push("stream_name", value);
 ```
-6. Read data from a feed:
+6. Read data from a Feed:
 ```
     streams <- feed.get();
     // look for a particular stream
@@ -58,4 +58,4 @@ Your imp should start reporting the current temperature to M2X every 15 minutes.
 
 LICENSE
 =======
-The code and images in this reporistory are released under the MIT license. See [LICESNE](LICENSE) for the terms.
+The code and images in this repository are released under the MIT license. See [LICENSE](LICENSE) for the terms.
