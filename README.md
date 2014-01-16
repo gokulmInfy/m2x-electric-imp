@@ -21,15 +21,15 @@ How to use the library
 2. Create a New Model for your project, and assign your device to it.
 3. Copy the [M2XFeed class](/lib/m2x.agent.nut) to the top of your agent code.
 4. Create a feed object:
-
+```
     feed <- M2XFeed("_Master Key_", "_Feed ID_");
-
+```
 5. Push data to a stream in the feed:
-
+```
     feed.push("stream_name", value);
-
+```
 6. Read data from a feed:
-
+```
     streams <- feed.get();
     // look for a particular stream
     foreach(stream in streams) {
@@ -37,7 +37,7 @@ How to use the library
             // do something
         }
     }
-
+```
 How to Build the Example
 ========================
 The provided example is based on the [TempBug Instructable](http://www.instructables.com/id/TempBug-internet-connected-thermometer/)
