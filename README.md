@@ -17,6 +17,7 @@ Please consult the [M2X glossary](https://m2x.att.com/developer/documentation/gl
 
 How to use the library
 =======================
+
 1. Log into the [Electric Imp IDE](https://ide.electricimp.com).
 2. Create a New Model for your project, and assign your device to it.
 3. Copy the [M2XFeed class](/lib/m2x.agent.nut) to the top of your agent code.
@@ -38,9 +39,12 @@ How to use the library
         }
     }
 ```
+
+
 How to Build the Example
 ========================
 The provided example is based on the [TempBug Instructable](http://www.instructables.com/id/TempBug-internet-connected-thermometer/)
+
 
 1. Create a New Model (we called ours M2X TempBug)
 2. Create the following circuit with a 10KΩ resistor, and a 10KΩ NTC thermistor:
@@ -48,6 +52,7 @@ The provided example is based on the [TempBug Instructable](http://www.instructa
 3. Copy [thermistor-tempbug.device.nut](/example/tempbug-thermistor.device.nut) to the device code window.
 4. Copy [tempbug-m2x.agent.nut](/example/tempbug-m2x.agent.nut) to the agent window.
 5. Hit "Build and Run"
+
 
 Your imp should start reporting the current temperature to M2X every 15 minutes.
 
