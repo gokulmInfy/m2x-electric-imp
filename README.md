@@ -29,7 +29,9 @@ How to use the library
 ```
     feed.push("stream_name", value);
 ```
+
 6. Read data from a Feed:
+
 ```
     streams <- feed.get();
     // look for a particular stream
