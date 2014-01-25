@@ -48,10 +48,22 @@ class M2XClient {
 
     function _sendRequest(req, cb) {
         if (cb) {
-            req.sendasync(cb);
+            req.sendasync(function(resp) {
+                    cb(_parseJsonResponse(resp));
+                });
         } else {
-            return req.sendsync();
+            return _parseJsonResponse(req.sendsync());
         }
+    }
+
+    function _parseJsonResponse(resp) {
+        local parsed_body;
+        try {
+            parsed_body = http.jsondecode(resp.body);
+        } catch(ex) {
+            parsed_body = resp.body;
+        }
+        return {"code": resp.statuscode, "body": parsed_body};
     }
 }
 
@@ -143,20 +155,6 @@ class M2X {
     }
 }
 
-function parseJsonResponse(resp) {
-    if (resp.statuscode != 200) {
-        server.log(format("Error getting feed(s) - %i: %s", resp.statuscode, resp.body));
-        return;
-    }
-
-    try {
-        return http.jsondecode(resp.body);
-    } catch(ex) {
-        server.log(format("Error getting feed(s) - %s", ex));
-        return;
-    }
-}
-
 /********** Example usage of M2XFeeds class **********/
 
 // set api key and feed to use
@@ -188,4 +186,4 @@ function logStreams(data) {
     }
 }
 
-logStreams(parseJsonResponse(feeds.streams(FEED_ID)));
+logStreams(feeds.streams(FEED_ID).body);
