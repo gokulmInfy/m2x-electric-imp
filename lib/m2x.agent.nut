@@ -1,73 +1,181 @@
-class M2XFeed {
-    _apiKey = null;
-    _feedId = null;
-    
-    _baseUrl = null;
+class M2XClient {
+    _apiBase = null;
     _headers = null;
-    
-    constructor(apiKey, feedId) {
-        _apiKey = apiKey;
-        _feedId = feedId;
-        
-        _baseUrl = format("http://api-m2x.att.com/v1/feeds/%s", _feedId);
+
+    constructor(apiKey, apiBase) {
+        _apiBase = apiBase;
         _headers = {
-            "X-M2X-KEY": _apiKey,
+            "X-M2X-KEY": apiKey,
             "Content-Type": "application/json"
         };
     }
-  
-    function put(feedName, value, callback = null) {
-        if (callback == null) callback = _defaultCallback.bindenv(this);
-        
-        local streamUrl = format("%s/streams/%s", _baseUrl, feedName);
-        local body = http.jsonencode({ "value": value });
-        http.put(streamUrl, _headers, body).sendasync(callback);
+
+    function get(path, params = null, cb = null) {
+        local request = http.get(_createUrl(path, params), _headers);
+        return _sendRequest(request, cb);
     }
 
-    function get() {
-        local requestUrl = format("%s/streams", _baseUrl);
-        local resp = http.get(requestUrl, _headers).sendsync();
-        
-        local streams = {};
-        
-        if (resp.statuscode != 200) {
-            server.log(format("Error getting feed(s) - %i: %s", resp.statuscode, resp.body));
-            return;
+    function post(path, body, cb = null) {
+        local req = http.post(_createUrl(path), _headers, _encodeBody(body));
+        return _sendRequest(req, cb);
+    }
+
+    function put(path, body, cb = null) {
+        local request = http.put(_createUrl(path), _headers, _encodeBody(body));
+        return _sendRequest(request, cb);
+    }
+
+    function httpdelete(path, cb = null) {
+        local request = http.httpdelete(_createUrl(path), _headers);
+        return _sendRequest(request, cb);
+    }
+
+    function _createUrl(path, params = null) {
+        local url = _apiBase + path;
+        if (params) {
+            url += "?" + http.urlencode(params);
         }
-        
-        try {
-            local data = http.jsondecode(resp.body);
-            if ("streams" in data) {
-                return data.streams;
-            } else {
-                server.log("Error getting feed(s) - 'streams' not in response body.")
-                return;
-            }
-        } catch(ex) {
-            server.log(format("Error getting feed(s) - %s", ex));
-            return;
+        server.log("URL to use: " + url);
+        return url;
+    }
+
+    function _encodeBody(body) {
+        if ((typeof body) != "string") {
+            body = http.jsonencode(body);
+        }
+        return body;
+    }
+
+    function _sendRequest(req, cb) {
+        if (cb) {
+            req.sendasync(function(resp) {
+                    cb(_parseJsonResponse(resp));
+                });
+        } else {
+            return _parseJsonResponse(req.sendsync());
         }
     }
-  
-    /********** Private Functions - don't call these **********/
-    function _defaultCallback(resp) {
-        server.log(format("HTTP Response - %i: %s", resp.statuscode, resp.body)); 
+
+    function _parseJsonResponse(resp) {
+        local parsed_body;
+        try {
+            parsed_body = http.jsondecode(resp.body);
+        } catch(ex) {
+            parsed_body = resp.body;
+        }
+        return {"code": resp.statuscode, "body": parsed_body};
     }
 }
 
+class M2XFeeds {
+    _client = null;
+
+    constructor(client) {
+        _client = client;
+    }
+
+    function list(params = null, callback = null) {
+        return _client.get("/feeds", params, callback);
+    }
+
+    function view(feedId, callback = null) {
+        local url = format("/feeds/%s", feedId);
+        return _client.get(url, null, callback);
+    }
+
+    function log(feedId, callback = null) {
+        local url = format("/feeds/%s/log", feedId);
+        return _client.get(url, null, callback);
+    }
+
+    function location(feedId, callback = null) {
+        local url = format("/feeds/%s/location", feedId);
+        return _client.get(url, null, callback);
+    }
+
+    function updateLocation(feedId, body, callback = null) {
+        local url = format("/feeds/%s/location", feedId);
+        return _client.put(url, body, callback);
+    }
+
+    function streams(feedId, callback = null) {
+        local url = format("/feeds/%s/streams", feedId);
+        return _client.get(url, null, callback);
+    }
+
+    function stream(feedId, streamName, callback = null) {
+        local url = format("/feeds/%s/streams/%s", feedId, streamName);
+        return _client.get(url, null, callback);
+    }
+
+    function streamValues(feedId, streamName, params, callback = null) {
+        local url = format("feeds/%s/streams/%s/values", feedId, streamName);
+        return _client.get(url, params, callback);
+    }
+
+    function updateStream(feedId, streamName, value, callback = null) {
+        local url = format("/feeds/%s/streams/%s", feedId, streamName);
+        return _client.put(url, {"value": value}, callback);
+    }
+
+    function deleteStream(feedId, streamName, callback = null) {
+        local url = format("/feeds/%s/streams/%s", feedId, streamName);
+        return _client.httpdelete(url, callback);
+    }
+
+    function postMultiple(feedId, values, callback = null) {
+        local url = format("/feeds/%s", feedId);
+        return _client.post(url, {"values": values}, callback);
+    }
+}
+
+class M2X {
+    _apiKey = null;
+    _apiBase = null;
+    _client = null;
+    _feeds = null;
+
+    constructor(apiKey, apiBase = "http://api-m2x.att.com/v1") {
+        _apiKey = apiKey;
+        _apiBase = apiBase;
+    }
+
+    function client() {
+        if (!_client) {
+            _client = M2XClient(_apiKey, _apiBase);
+        }
+        return _client;
+    }
+
+    function feeds() {
+        if (!_feeds) {
+            _feeds = M2XFeeds(client());
+        }
+        return _feeds;
+    }
+}
+
+/********** Example usage of M2XFeeds class **********/
+
+// set api key and feed to use
 API_KEY <- "_Master Key_";
 FEED_ID <- "_Feed ID_";
 
-/********** Example usage of M2XFeed class **********/ 
-
 // create a feed:
-feed <- M2XFeed(API_KEY, FEED_ID);
+m2x <- M2X(API_KEY);
+feeds <- m2x.feeds();
 
 // push data to temperature stream:
-feed.put("temperature", 24.3);
+feeds.updateStream(FEED_ID, "temperature", 24.3);
 
 // get (and log) data from feed:
-function logStreams(streams) {
+function logStreams(data) {
+    if (!(data && ("streams" in data))) {
+        server.log("Error getting feed(s) - 'streams' not in response body.");
+        return;
+    }
+    local streams = data.streams;
+
     // loop through every stream
     foreach(stream in streams) {
         server.log("*************************");
@@ -78,5 +186,4 @@ function logStreams(streams) {
     }
 }
 
-streams <- feed.get();
-logStreams(streams);
+logStreams(feeds.streams(FEED_ID).body);
