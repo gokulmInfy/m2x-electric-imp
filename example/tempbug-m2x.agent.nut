@@ -6,7 +6,8 @@ class M2XClient {
         _apiBase = apiBase;
         _headers = {
             "X-M2X-KEY": apiKey,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "User-Agent": "M2X Electric Imp Client/1.0.0"
         };
     }
 
