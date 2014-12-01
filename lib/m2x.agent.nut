@@ -7,7 +7,7 @@ class M2XClient {
         _headers = {
             "X-M2X-KEY": apiKey,
             "Content-Type": "application/json",
-            "User-Agent": "M2X Electric Imp Client/1.0.0"
+            "User-Agent": "M2X Electric Imp Client/2.0.0"
         };
     }
 
@@ -28,6 +28,11 @@ class M2XClient {
 
     function httpdelete(path, cb = null) {
         local request = http.httpdelete(_createUrl(path), _headers);
+        return _sendRequest(request, cb);
+    }
+
+    function httpdeleteWithData(path, body, cb = null) {
+        local request = http.request("DELETE", _createUrl(path), _headers, _encodeBody(body));
         return _sendRequest(request, cb);
     }
 
@@ -68,65 +73,146 @@ class M2XClient {
     }
 }
 
-class M2XFeeds {
+class M2XDevices {
     _client = null;
 
     constructor(client) {
         _client = client;
     }
 
+    function catalog(params = null, callback = null) {
+        return _client.get("/devices/catalog", params, callback);
+    }
+
     function list(params = null, callback = null) {
-        return _client.get("/feeds", params, callback);
+        return _client.get("/devices", params, callback);
     }
 
-    function view(feedId, callback = null) {
-        local url = format("/feeds/%s", feedId);
-        return _client.get(url, null, callback);
+    function groups(callback = null) {
+        return _client.get("/devices/groups", null, callback);
     }
 
-    function log(feedId, callback = null) {
-        local url = format("/feeds/%s/log", feedId);
-        return _client.get(url, null, callback);
+    function create(body, callback = null) {
+        return _client.post("/devices", body, callback);
     }
 
-    function location(feedId, callback = null) {
-        local url = format("/feeds/%s/location", feedId);
-        return _client.get(url, null, callback);
-    }
-
-    function updateLocation(feedId, body, callback = null) {
-        local url = format("/feeds/%s/location", feedId);
+    function update(deviceId, body, callback = null) {
+        local url = format("/devices/%s", deviceId);
         return _client.put(url, body, callback);
     }
 
-    function streams(feedId, callback = null) {
-        local url = format("/feeds/%s/streams", feedId);
+    function view(deviceId, callback = null) {
+        local url = format("/devices/%s", deviceId);
         return _client.get(url, null, callback);
     }
 
-    function stream(feedId, streamName, callback = null) {
-        local url = format("/feeds/%s/streams/%s", feedId, streamName);
+    function readLocation(deviceId, callback = null) {
+        local url = format("/devices/%s/location", deviceId);
         return _client.get(url, null, callback);
     }
 
-    function streamValues(feedId, streamName, params, callback = null) {
-        local url = format("feeds/%s/streams/%s/values", feedId, streamName);
+    function updateLocation(deviceId, body, callback = null) {
+        local url = format("/devices/%s/location", deviceId);
+        return _client.put(url, body, callback);
+    }
+
+    function listStreams(deviceId, callback = null) {
+        local url = format("/devices/%s/streams", deviceId);
+        return _client.get(url, null, callback);
+    }
+
+    function createStream(deviceId, streamName, body, callback = null) {
+        local url = format("/devices/%s/streams/%s", deviceId, streamName);
+        return _client.put(url, body, callback);
+    }
+
+    function updateStream(deviceId, streamName, body, callback = null) {
+        return createStream(deviceId, streamName, body, callback);
+    }
+
+    function updateStreamValue(deviceId, streamName, body, callback = null) {
+        local url = format("/devices/%s/streams/%s/value", deviceId, streamName);
+        return _client.put(url, body, callback);
+    }
+
+    function viewStream(deviceId, streamName, callback = null) {
+        local url = format("/devices/%s/streams/%s", deviceId, streamName);
+        return _client.get(url, null, callback);
+    }
+
+    function listStreamValues(deviceId, streamName, params = null, callback = null) {
+        local url = format("/devices/%s/streams/%s/values.json", deviceId, streamName);
         return _client.get(url, params, callback);
     }
 
-    function updateStream(feedId, streamName, value, callback = null) {
-        local url = format("/feeds/%s/streams/%s", feedId, streamName);
-        return _client.put(url, {"value": value}, callback);
+    function samplingStreamValues(deviceId, streamName, params = null, callback = null) {
+        local url = format("/devices/%s/streams/%s/sampling.json", deviceId, streamName);
+        return _client.get(url, params, callback);
     }
 
-    function deleteStream(feedId, streamName, callback = null) {
-        local url = format("/feeds/%s/streams/%s", feedId, streamName);
+    function streamStats(deviceId, streamName, params = null, callback = null) {
+        local url = format("/devices/%s/streams/%s/stats", deviceId, streamName);
+        return _client.get(url, params, callback);
+    }
+
+    function postStreamValues(deviceId, streamName, body, callback = null) {
+        local url = format("/devices/%s/streams/%s/values", deviceId, streamName);
+        return _client.post(url, body, callback);
+    }
+
+    function deleteStreamValues(deviceId, streamName, body, callback = null) {
+        local url = format("/devices/%s/streams/%s/values", deviceId, streamName);
+        return _client.httpdeleteWithData(url, body, callback);
+    }
+
+    function deleteStream(deviceId, streamName, callback = null) {
+        local url = format("/devices/%s/streams/%s", deviceId, streamName);
         return _client.httpdelete(url, callback);
     }
 
-    function postMultiple(feedId, values, callback = null) {
-        local url = format("/feeds/%s", feedId);
-        return _client.post(url, {"values": values}, callback);
+    function postDeviceUpdates(deviceId, body, callback = null) {
+        local url = format("/devices/%s/updates", deviceId);
+        return _client.post(url, body, callback);
+    }
+
+    function listTriggers(deviceId, callback = null) {
+        local url = format("/devices/%s/triggers", deviceId);
+        return _client.get(url, null, callback);
+    }
+
+    function createTrigger(deviceId, body, callback = null) {
+        local url = format("/devices/%s/triggers", deviceId);
+        return _client.post(url, body, callback);
+    }
+
+    function viewTrigger(deviceId, triggerId, callback = null) {
+        local url = format("/devices/%s/triggers/%s", deviceId, triggerId);
+        return _client.get(url, null, callback);
+    }
+
+    function updateTrigger(deviceId, triggerId, body, callback = null) {
+        local url = format("/devices/%s/triggers/%s", deviceId, triggerId);
+        return _client.put(url, body, callback);
+    }
+
+    function testTrigger(deviceId, triggerId, callback = null) {
+        local url = format("/devices/%s/triggers/%s/test", deviceId, triggerId);
+        return _client.post(url, null, callback);
+    }
+
+    function deleteTrigger(deviceId, triggerId, callback = null) {
+        local url = format("/devices/%s/triggers/%s", deviceId, triggerId);
+        return _client.httpdelete(url, callback);
+    }
+
+    function viewLog(deviceId, callback = null) {
+        local url = format("/devices/%s/log", deviceId);
+        return _client.get(url, null, callback);
+    }
+
+    function deleteDevice(deviceId, callback = null) {
+        local url = format("/devices/%s", deviceId);
+        return _client.httpdelete(url, callback);
     }
 }
 
@@ -136,7 +222,7 @@ class M2X {
     _client = null;
     _feeds = null;
 
-    constructor(apiKey, apiBase = "http://api-m2x.att.com/v1") {
+    constructor(apiKey, apiBase = "http://api-m2x.att.com/v2") {
         _apiKey = apiKey;
         _apiBase = apiBase;
     }
@@ -148,31 +234,31 @@ class M2X {
         return _client;
     }
 
-    function feeds() {
-        if (!_feeds) {
-            _feeds = M2XFeeds(client());
+    function devices() {
+        if (!_devices) {
+            _devices = M2XDevices(client());
         }
-        return _feeds;
+        return _devices;
     }
 }
 
-/********** Example usage of M2XFeeds class **********/
+/********** Example usage of M2XDevices class **********/
 
-// set api key and feed to use
+// set api key and device to use
 API_KEY <- "_Master Key_";
-FEED_ID <- "_Feed ID_";
+DEVICE_ID <- "_Device ID_";
 
-// create a feed:
+// create a device:
 m2x <- M2X(API_KEY);
-feeds <- m2x.feeds();
+devices <- m2x.devices();
 
 // push data to temperature stream:
-feeds.updateStream(FEED_ID, "temperature", 24.3);
+devices.updateStreamValue(DEVICE_ID, "temperature", 24.3);
 
-// get (and log) data from feed:
+// get (and log) data from device:
 function logStreams(data) {
     if (!(data && ("streams" in data))) {
-        server.log("Error getting feed(s) - 'streams' not in response body.");
+        server.log("Error getting device(s) - 'streams' not in response body.");
         return;
     }
     local streams = data.streams;
@@ -187,4 +273,4 @@ function logStreams(data) {
     }
 }
 
-logStreams(feeds.streams(FEED_ID).body);
+logStreams(devices.listStreams(DEVICE_ID).body);

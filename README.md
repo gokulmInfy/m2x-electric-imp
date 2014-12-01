@@ -9,7 +9,7 @@ Getting Started with M2X and Electric Imp
 =========================================
 1. Signup for an [M2X Account](https://m2x.att.com/signup).
 2. Obtain your _Master Key_ from the Master Keys tab of your [Account Settings](https://m2x.att.com/account) screen.
-2. Create your first [Data Source Blueprint](https://m2x.att.com/blueprints) and copy its _Feed ID_.
+2. Create your first [Data Source Blueprint](https://m2x.att.com/blueprints) and copy its _Device ID_.
 3. Review the [M2X API Documentation](https://m2x.att.com/developer/documentation/overview).
 4. Obtain an [Electric Imp](http://electricimp.com/docs/gettingstarted/devkits/).
 
@@ -20,22 +20,22 @@ How to use the library
 
 1. Log into the [Electric Imp IDE](https://ide.electricimp.com).
 2. Create a New Model for your project, and assign your device to it.
-3. Copy the [M2XFeed class](/lib/m2x.agent.nut) to the top of your agent code.
-4. Create a Feed object:
+3. Copy the [M2XDevice class](/lib/m2x.agent.nut) to the top of your agent code.
+4. Create a Device object:
 ```
-    feed <- M2XFeed("_Master Key_", "_Feed ID_");
+    device <- M2XDevice("_Master Key_", "_Device ID_");
 ```
-5. Push data to a Stream in the Feed:
+5. Post data to a Stream in the Device:
 ```
-    feed.push("stream_name", value);
+    device.updateStreamValue("feed ID", "stream_name", value);
 ```
 
-6. Read data from a Feed:
+6. Read data from a Device:
 
 ```
-    streams <- feed.get();
+    streams <- device.listStreams("feed ID");
     // look for a particular stream
-    foreach(stream in streams) {
+    foreach(stream in streams.streams) {
         if (stream.name == "stream_name") {
             // do something
         }
