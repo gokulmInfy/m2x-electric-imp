@@ -220,7 +220,7 @@ class M2X {
     _apiKey = null;
     _apiBase = null;
     _client = null;
-    _feeds = null;
+    _devices = null;
 
     constructor(apiKey, apiBase = "http://api-m2x.att.com/v2") {
         _apiKey = apiKey;
@@ -250,5 +250,6 @@ devices <- m2x.devices();
 officeDevice <- M2XDevice(API_KEY, DEVICE_ID);
 
 device.on("temp", function(data) {
-    devices.updateStreamValue(DEVICE_ID, "temp", data.temp);
+    local body = http.jsonencode({ "value": data.temp })
+    devices.updateStreamValue(DEVICE_ID, "temp", body);
 });

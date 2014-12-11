@@ -220,7 +220,7 @@ class M2X {
     _apiKey = null;
     _apiBase = null;
     _client = null;
-    _feeds = null;
+    _devices = null;
 
     constructor(apiKey, apiBase = "http://api-m2x.att.com/v2") {
         _apiKey = apiKey;
@@ -253,7 +253,8 @@ m2x <- M2X(API_KEY);
 devices <- m2x.devices();
 
 // push data to temperature stream:
-devices.updateStreamValue(DEVICE_ID, "temperature", 24.3);
+body <- http.jsonencode({ "value": 24.3 });
+resp <- devices.updateStreamValue(DEVICE_ID, "aabbcc", body);
 
 // get (and log) data from device:
 function logStreams(data) {
