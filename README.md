@@ -9,7 +9,7 @@ Getting Started with M2X and Electric Imp
 =========================================
 1. Signup for an [M2X Account](https://m2x.att.com/signup).
 2. Obtain your _Master Key_ from the Master Keys tab of your [Account Settings](https://m2x.att.com/account) screen.
-2. Create your first [Data Source Blueprint](https://m2x.att.com/blueprints) and copy its _Device ID_.
+2. Create your first [Device](https://m2x.att.com/devices) and copy its _Device ID_.
 3. Review the [M2X API Documentation](https://m2x.att.com/developer/documentation/overview).
 4. Obtain an [Electric Imp](http://electricimp.com/docs/gettingstarted/devkits/).
 
@@ -56,7 +56,7 @@ The provided example is based on the [TempBug Instructable](http://www.instructa
 5. Hit "Build and Run"
 
 
-Your imp should start reporting the current temperature to M2X every 15 minutes.
+Your Imp should start reporting the current temperature to M2X every 15 minutes.
 
 LICENSE
 =======
