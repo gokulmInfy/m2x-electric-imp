@@ -27,13 +27,13 @@ How to use the library
 ```
 5. Post data to a Stream in the Device:
 ```
-    device.updateStreamValue("feed ID", "stream_name", value);
+    device.updateStreamValue("device ID", "stream_name", value);
 ```
 
 6. Read data from a Device:
 
 ```
-    streams <- device.listStreams("feed ID");
+    streams <- device.listStreams("device ID");
     // look for a particular stream
     foreach(stream in streams.streams) {
         if (stream.name == "stream_name") {
