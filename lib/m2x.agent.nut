@@ -88,8 +88,8 @@ class M2XDevices {
         return _client.get("/devices", params, callback);
     }
 
-    function groups(callback = null) {
-        return _client.get("/devices/groups", null, callback);
+    function tags(callback = null) {
+        return _client.get("/devices/tags", null, callback);
     }
 
     function create(body, callback = null) {
