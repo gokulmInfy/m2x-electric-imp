@@ -175,36 +175,6 @@ class M2XDevices {
         return _client.post(url, body, callback);
     }
 
-    function listTriggers(deviceId, callback = null) {
-        local url = format("/devices/%s/triggers", deviceId);
-        return _client.get(url, null, callback);
-    }
-
-    function createTrigger(deviceId, body, callback = null) {
-        local url = format("/devices/%s/triggers", deviceId);
-        return _client.post(url, body, callback);
-    }
-
-    function viewTrigger(deviceId, triggerId, callback = null) {
-        local url = format("/devices/%s/triggers/%s", deviceId, triggerId);
-        return _client.get(url, null, callback);
-    }
-
-    function updateTrigger(deviceId, triggerId, body, callback = null) {
-        local url = format("/devices/%s/triggers/%s", deviceId, triggerId);
-        return _client.put(url, body, callback);
-    }
-
-    function testTrigger(deviceId, triggerId, callback = null) {
-        local url = format("/devices/%s/triggers/%s/test", deviceId, triggerId);
-        return _client.post(url, null, callback);
-    }
-
-    function deleteTrigger(deviceId, triggerId, callback = null) {
-        local url = format("/devices/%s/triggers/%s", deviceId, triggerId);
-        return _client.httpdelete(url, callback);
-    }
-
     function viewLog(deviceId, callback = null) {
         local url = format("/devices/%s/log", deviceId);
         return _client.get(url, null, callback);
