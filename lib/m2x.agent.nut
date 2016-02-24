@@ -16,6 +16,11 @@ class M2XClient {
         return _sendRequest(request, cb);
     }
 
+    function getRaw(path, params = null, cb = null) {
+        local request = http.get(_createUrl(path, params), _headers);
+        return _sendRequestRaw(request, cb);
+    }
+
     function post(path, body, cb = null) {
         local req = http.post(_createUrl(path), _headers, _encodeBody(body));
         return _sendRequest(req, cb);
@@ -59,6 +64,16 @@ class M2XClient {
                 });
         } else {
             return _parseJsonResponse(req.sendsync());
+        }
+    }
+
+    function _sendRequestRaw(req, cb) {
+        if (cb) {
+            req.sendasync(function(resp) {
+                    cb(resp);
+                });
+        } else {
+            return req.sendsync();
         }
     }
 
@@ -207,11 +222,36 @@ class M2XDevices {
     }
 }
 
+class M2XTimestamps {
+    _client = null;
+
+    constructor(client) {
+        _client = client;
+    }
+
+    function getTime(callback = null) {
+        return _client.get("/time", null, callback);
+    }
+
+    function getSeconds(callback = null) {
+        return _client.getRaw("/time/seconds", null, callback);
+    }
+
+    function getMillis(callback = null) {
+        return _client.getRaw("/time/millis", null, callback);
+    }
+
+    function getISO8601(callback = null) {
+        return _client.getRaw("/time/iso8601", null, callback);
+    }
+}
+
 class M2X {
     _apiKey = null;
     _apiBase = null;
     _client = null;
     _devices = null;
+    _timestamps = null;
 
     constructor(apiKey, apiBase = "http://api-m2x.att.com/v2") {
         _apiKey = apiKey;
@@ -230,6 +270,13 @@ class M2X {
             _devices = M2XDevices(client());
         }
         return _devices;
+    }
+
+    function timestamps() {
+        if (!_timestamps) {
+            _timestamps = M2XTimestamps(client());
+        }
+        return _timestamps;
     }
 }
 
