@@ -175,6 +175,12 @@ class M2XDevices {
         return _client.post(url, body, callback);
     }
 
+    // Link: https://m2x.att.com/developer/documentation/v2/device#Post-Device-Update--Single-Values-to-Multiple-Streams-
+    function postDeviceUpdate(deviceId, body, callback = null) {
+        local url = format("/devices/%s/update", deviceId);
+        return _client.post(url, body, callback);
+    }
+
     function viewLog(deviceId, callback = null) {
         local url = format("/devices/%s/log", deviceId);
         return _client.get(url, null, callback);
