@@ -190,6 +190,21 @@ class M2XDevices {
         local url = format("/devices/%s", deviceId);
         return _client.httpdelete(url, callback);
     }
+
+    function listCommands(deviceId, callback = null) {
+        local url = format("/devices/%s/commands", deviceId);
+        return _client.get(url, null, callback);
+    }
+
+    function processCommand(deviceId, commandId, body, callback = null) {
+        local url = format("/devices/%s/commands/%s/process", deviceId, commandId);
+        return _client.put(url, body, callback);
+    }
+
+    function rejectCommand(deviceId, commandId, body, callback = null) {
+        local url = format("/devices/%s/commands/%s/reject", deviceId, commandId);
+        return _client.put(url, body, callback);
+    }
 }
 
 class M2X {
